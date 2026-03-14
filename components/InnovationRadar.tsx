@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Blip {
   label: string;
@@ -8,7 +8,7 @@ interface Blip {
   color: string;
 }
 
-const BLIPS: Blip[] = [
+const DEFAULT_BLIPS: Blip[] = [
   { label: "IoT Prototype",    angleDeg: 42,  dist: 0.62, color: "#00F5FF" },
   { label: "AI Model Training",angleDeg: 118, dist: 0.40, color: "#7C3AED" },
   { label: "Security Scan",    angleDeg: 205, dist: 0.75, color: "#FF3B3B" },
@@ -18,6 +18,29 @@ const BLIPS: Blip[] = [
 
 export default function InnovationRadar() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [blips, setBlips] = useState<Blip[]>(DEFAULT_BLIPS);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const res = await fetch("/api/radar/activity");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (mounted && Array.isArray(data.blips) && data.blips.length > 0) {
+          setBlips(data.blips);
+        }
+      } catch {
+        // keep default fallback blips when backend is unavailable
+      }
+    };
+    load();
+    const interval = setInterval(load, 7000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -78,7 +101,7 @@ export default function InnovationRadar() {
       ctx.stroke();
 
       // ── Blips ──────────────────────────────────────────
-      BLIPS.forEach((blip) => {
+      blips.forEach((blip) => {
         const θ = (blip.angleDeg * Math.PI) / 180;
         const r = blip.dist * maxR;
         const x = CX + r * Math.cos(θ);
@@ -121,7 +144,7 @@ export default function InnovationRadar() {
 
     raf = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [blips]);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -135,7 +158,7 @@ export default function InnovationRadar() {
       />
       {/* Detection log */}
       <div className="space-y-1.5 w-full max-w-[260px]">
-        {BLIPS.map((b) => (
+        {blips.map((b) => (
           <div key={b.label} className="flex items-center gap-2 font-mono text-[10px]">
             <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: b.color, boxShadow: `0 0 6px ${b.color}` }} />
             <span className="text-slate-600 tracking-wider uppercase">{b.label}</span>

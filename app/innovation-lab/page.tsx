@@ -64,6 +64,9 @@ export default function InnovationLabPage() {
               <Link href="#research" className="btn-cyber flex items-center gap-2 px-6 py-3 bg-[#00F5FF] text-black font-bold rounded-lg text-sm">
                 <FlaskConical size={16} /> View Research
               </Link>
+              <Link href="/innovation-lab/submissions" className="btn-cyber flex items-center gap-2 px-6 py-3 border border-[#22C55E]/40 text-[#22C55E] rounded-lg text-sm">
+                <Zap size={14} /> Submit Innovation
+              </Link>
               <Link href="/apprenticeship" className="btn-cyber flex items-center gap-2 px-6 py-3 border border-[#00F5FF]/40 text-[#00F5FF] rounded-lg text-sm">
                 Join the Lab <ArrowRight size={14} />
               </Link>

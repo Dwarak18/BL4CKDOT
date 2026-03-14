@@ -66,11 +66,36 @@ const faqs = [
 export default function ApprenticeshipPage() {
   const [selectedTrack, setSelectedTrack] = useState(tracks[0]);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", track: "cyber", motivation: "" });
+  const [form, setForm] = useState({ name: "", email: "", track: "cybersecurity", resume_link: "", motivation: "" });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const trackMap: Record<string, string> = {
+      cyber: "cybersecurity",
+      ai: "AI",
+      iot: "IoT",
+      fullstack: "fullstack",
+      cybersecurity: "cybersecurity",
+    };
+
+    const res = await fetch("/api/apprenticeship", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        track: trackMap[form.track] || "cybersecurity",
+        resume_link: form.resume_link,
+        motivation: form.motivation,
+      }),
+    });
+
+    if (!res.ok) {
+      alert("Unable to submit application right now.");
+      return;
+    }
+
     setSubmitted(true);
   };
 
@@ -222,6 +247,13 @@ export default function ApprenticeshipPage() {
                   <option value="iot">IoT Engineering</option>
                   <option value="fullstack">Fullstack Development</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2 block">Resume Link</label>
+                <input value={form.resume_link} onChange={(e) => setForm({ ...form, resume_link: e.target.value })}
+                  required placeholder="https://drive.google.com/..."
+                  className="w-full bg-[#0F172A] border border-slate-700 rounded-lg px-4 py-3 text-sm text-white placeholder-slate-600 outline-none focus:border-[#22C55E]/50 transition-colors" />
               </div>
 
               <div>

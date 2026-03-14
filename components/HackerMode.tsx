@@ -11,9 +11,10 @@ const COMMANDS: Record<string, string[]> = {
     "Available commands:",
     "  help         → Show this message",
     "  projects     → List all BL4CKDOT projects",
-    "  team         → Display team members",
+    "  innovation   → Open innovation submission portal",
     "  apply        → Join apprenticeship program",
     "  research     → View research areas",
+    "  terminal     → Advanced Linux terminal (auth required)",
     "  contact      → Contact information",
     "  clear        → Clear terminal",
     "  exit         → Close terminal",
@@ -30,19 +31,15 @@ const COMMANDS: Record<string, string[]> = {
     "",
     "Type 'navigate /projects' to explore details.",
   ],
-  team: [
-    "► BL4CKDOT TEAM",
+  innovation: [
+    "► INNOVATION SUBMISSION PORTAL",
     "──────────────────────────────────────────────",
-    " Dwarak           — Lead Architect",
-    " Sarvesh          — AI Engineer",
-    " Anto             — IoT Specialist",
-    " Deepak           — Cybersecurity Analyst",
-    " Pranav Krishna   — Fullstack Developer",
-    " Goutham          — ML Researcher",
-    " Kalaiarasan      — Embedded Systems",
-    " Dhanush          — Security Researcher",
+    " Submit ideas by audience:",
+    "  • students",
+    "  • innovators",
+    "  • companies",
     "",
-    "Type 'navigate /team' to view full profiles.",
+    " >> Redirecting to /innovation-lab/submissions ...",
   ],
   apply: [
     "► APPRENTICESHIP PROGRAM",
@@ -76,6 +73,14 @@ const COMMANDS: Record<string, string[]> = {
     " GitHub:   github.com/bl4ckdot",
     "",
     "Type 'navigate /contact' to use the secure terminal form.",
+  ],
+  terminal: [
+    "► ADVANCED TERMINAL MODE",
+    "──────────────────────────────────────────────",
+    " Authenticated users can access sandbox Linux sessions.",
+    " Stack: WebSocket + node-pty + Docker sandbox.",
+    "",
+    " Contact admin to enable server-side terminal access.",
   ],
   clear: [],
   exit: ["Closing terminal session..."],
@@ -154,6 +159,11 @@ export default function HackerMode() {
     const response = COMMANDS[trimmed];
     if (response) {
       response.forEach((l) => lines.push({ type: "output", text: l }));
+      if (trimmed === "innovation") {
+        setTimeout(() => {
+          window.location.href = "/innovation-lab/submissions";
+        }, 450);
+      }
     } else {
       lines.push({ type: "output", text: `command not found: ${trimmed}` });
       lines.push({ type: "output", text: "Type 'help' for available commands." });

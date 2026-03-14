@@ -8,6 +8,7 @@ type TerminalLine = { text: string; color?: string };
 const PROMPTS = [
   "Enter your name:",
   "Enter your email:",
+  "Enter message subject:",
   "Enter your message:",
 ];
 
@@ -38,7 +39,7 @@ export default function ContactPage() {
     termRef.current?.scrollTo({ top: termRef.current.scrollHeight, behavior: "smooth" });
   }, [lines]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -54,9 +55,24 @@ export default function ContactPage() {
       setInput("");
     } else {
       // Final step - send
+      const [name, email, subject, message] = newValues;
       addLines.push({ text: "" });
       addLines.push({ text: "Encrypting message...", color: "#94a3b8" });
       addLines.push({ text: "Transmitting to BL4CKDOT secure relay...", color: "#94a3b8" });
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, subject, message }),
+        });
+        if (!res.ok) throw new Error("Failed");
+      } catch {
+        addLines.push({ text: "[!] Transmission error. Retry shortly.", color: "#FF3B3B" });
+        setValues(newValues);
+        setLines((prev) => [...prev, ...addLines]);
+        setInput("");
+        return;
+      }
       addLines.push({ text: "" });
       addLines.push({ text: "────────────────────────────────────────", color: "#7C3AED" });
       addLines.push({ text: "✔ MESSAGE TRANSMITTED TO BL4CKDOT", color: "#22C55E" });

@@ -10,7 +10,7 @@ import ScrollStory from "@/components/ScrollStory";
 import InnovationRadar from "@/components/InnovationRadar";
 import {
   Cpu, Shield, Brain, Code2, ArrowRight, ExternalLink,
-  ChevronDown, Zap, Globe, Lock, Activity
+  ChevronDown, Zap, Globe, Lock, Activity, Lightbulb, Microscope, Network, CircuitBoard, Rocket
 } from "lucide-react";
 
 const NetworkSphere = dynamic(() => import("@/components/NetworkSphere3D"), { ssr: false });
@@ -300,20 +300,23 @@ export default function HomePage() {
               </motion.div>
               <div className="flex flex-col md:flex-row items-center justify-between">
                 {[
-                  { step: "01", label: "Idea",       color: "#22D3EE", icon: "💡" },
-                  { step: "02", label: "Research",   color: "#38BDF8", icon: "🔬" },
-                  { step: "03", label: "Mentorship", color: "#8B5CF6", icon: "🧠" },
-                  { step: "04", label: "Prototype",  color: "#22C55E", icon: "⚡" },
-                  { step: "05", label: "Product",    color: "#F59E0B", icon: "🚀" },
+                  { step: "01", label: "Idea",       color: "#22D3EE", icon: Lightbulb },
+                  { step: "02", label: "Research",   color: "#38BDF8", icon: Microscope },
+                  { step: "03", label: "Mentorship", color: "#8B5CF6", icon: Network },
+                  { step: "04", label: "Prototype",  color: "#22C55E", icon: CircuitBoard },
+                  { step: "05", label: "Product",    color: "#F59E0B", icon: Rocket },
                 ].map((item, i, arr) => (
                   <div key={item.step} className="flex items-center">
                     <motion.div variants={fadeUp} initial="hidden" whileInView="visible"
                       viewport={{ once: true }} custom={i}
                       className="flex flex-col items-center text-center w-28 space-y-2 my-4 md:my-0">
-                      <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl"
+                      <motion.div
+                        animate={{ scale: [1, 1.06, 1], boxShadow: [`0 0 12px ${item.color}30`, `0 0 24px ${item.color}55`, `0 0 12px ${item.color}30`] }}
+                        transition={{ duration: 2.6, repeat: Infinity, delay: i * 0.2 }}
+                        className="w-16 h-16 rounded-full flex items-center justify-center"
                         style={{ background: `${item.color}15`, border: `1px solid ${item.color}40`, boxShadow: `0 0 20px ${item.color}20` }}>
-                        {item.icon}
-                      </div>
+                        <item.icon size={24} style={{ color: item.color }} />
+                      </motion.div>
                       <div className="font-mono text-[9px] tracking-widest" style={{ color: item.color }}>{item.step}</div>
                       <div className="font-orbitron font-bold text-white text-xs tracking-wider">{item.label}</div>
                     </motion.div>

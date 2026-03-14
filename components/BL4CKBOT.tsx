@@ -63,7 +63,7 @@ function getReply(input: string): string {
   for (const { patterns, reply } of RESPONSES) {
     if (patterns.some((p) => lower.includes(p))) return reply;
   }
-  return "I'm not sure about that yet — my training is ongoing! 🤖\n\nTry asking about:\n• projects • apprenticeship • cybersecurity\n• AI / IoT research • team • contact";
+  return "I can help with BL4CKDOT projects, apprenticeship, innovation submissions, and research discovery.";
 }
 
 export default function BL4CKBOT() {
@@ -82,17 +82,30 @@ export default function BL4CKBOT() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const send = () => {
+  const send = async () => {
     const text = input.trim();
     if (!text) return;
     setInput("");
     setMessages((prev) => [...prev, { role: "user", text }]);
     setTyping(true);
-    setTimeout(() => {
-      const reply = getReply(text);
-      setMessages((prev) => [...prev, { role: "bot", text: reply }]);
+    try {
+      const res = await fetch("/api/dot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setMessages((prev) => [...prev, { role: "bot", text: data.message || getReply(text) }]);
+      } else {
+        setMessages((prev) => [...prev, { role: "bot", text: getReply(text) }]);
+      }
+    } catch {
+      setMessages((prev) => [...prev, { role: "bot", text: getReply(text) }]);
+    } finally {
       setTyping(false);
-    }, 800 + Math.random() * 400);
+    }
   };
 
   // Subtle scroll-follow
