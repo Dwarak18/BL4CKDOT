@@ -17,6 +17,16 @@ type DashboardData = {
   contacts: Array<{ _id: string; name: string; email: string; subject: string; message: string }>;
 };
 
+async function parseJsonSafe<T>(res: Response): Promise<T | null> {
+  const text = await res.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
+  }
+}
+
 export default function AdminPage() {
   const [email, setEmail] = useState("admin@bl4ckdot.dev");
   const [password, setPassword] = useState("");
@@ -25,28 +35,40 @@ export default function AdminPage() {
 
   const login = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const json = await res.json();
-    if (!res.ok) {
-      alert(json.error || "Login failed");
-      return;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const json = await parseJsonSafe<{ error?: string }>(res);
+      if (!res.ok) {
+        alert(json?.error || "Login failed");
+        return;
+      }
+      setToken("session");
+      await loadDashboard();
+    } catch {
+      alert("Network error while signing in");
     }
-    setToken("session");
-    await loadDashboard();
   };
 
   const loadDashboard = async () => {
-    const res = await fetch("/api/admin/dashboard");
-    const json = await res.json();
-    if (!res.ok) {
-      alert(json.error || "Failed to load dashboard");
-      return;
+    try {
+      const res = await fetch("/api/admin/dashboard");
+      const json = await parseJsonSafe<DashboardData & { error?: string }>(res);
+      if (!res.ok) {
+        alert(json?.error || "Failed to load dashboard");
+        return;
+      }
+      if (!json) {
+        alert("Dashboard returned an invalid response");
+        return;
+      }
+      setData(json);
+    } catch {
+      alert("Network error while loading dashboard");
     }
-    setData(json);
   };
 
   const updateStatus = async (type: "apprenticeship" | "innovation", id: string, status: string) => {

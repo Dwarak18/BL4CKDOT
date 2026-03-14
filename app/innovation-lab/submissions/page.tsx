@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 
@@ -14,8 +15,16 @@ const tabs: { id: Tab; label: string }[] = [
 ];
 
 export default function InnovationSubmissionsPage() {
+  const searchParams = useSearchParams();
   const [active, setActive] = useState<Tab>("students");
   const [status, setStatus] = useState<SubmitState>("idle");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "students" || tab === "innovators" || tab === "companies") {
+      setActive(tab);
+    }
+  }, [searchParams]);
 
   const [student, setStudent] = useState({
     name: "",

@@ -6,10 +6,9 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "/",                  label: "Home" },
-  { href: "/#build-with-us",   label: "Build With Us" },
+  { href: "/build-with-us",    label: "Build With Us" },
   { href: "/innovation-lab",   label: "Innovation Lab" },
   { href: "/projects",         label: "Projects" },
-  { href: "/apprenticeship",   label: "Apprenticeship" },
   { href: "/research",         label: "Research" },
   { href: "/timeline",         label: "Timeline" },
   { href: "/contact",          label: "Contact" },
@@ -69,10 +68,10 @@ export default function Navigation() {
           {/* Right side */}
           <div className="hidden lg:flex items-center gap-3 ml-auto">
             <Link
-              href="/apprenticeship"
+              href="/build-with-us"
               className="btn-cyber px-4 py-2 text-xs font-semibold tracking-widest uppercase text-black bg-[#22D3EE] rounded hover:bg-[#22D3EE]/90 transition-all"
             >
-              Join Now
+              Build With Us
             </Link>
           </div>
 
@@ -107,11 +106,11 @@ export default function Navigation() {
               </Link>
             ))}
             <Link
-              href="/apprenticeship"
+              href="/build-with-us"
               onClick={() => setMobileOpen(false)}
               className="mt-2 px-4 py-3 text-sm font-semibold text-black bg-[#22D3EE] rounded text-center"
             >
-              Join Now
+              Build With Us
             </Link>
           </div>
         </div>
