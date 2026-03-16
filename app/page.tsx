@@ -6,9 +6,16 @@ import HeroAnimation from "@/components/HeroAnimation";
 import ParticleBackground from "@/components/ParticleBackground";
 import Footer from "@/components/Footer";
 import InnovationRadar from "@/components/InnovationRadar";
-import { ArrowRight, ChevronDown, Lightbulb, Microscope, Network, CircuitBoard, Rocket, Zap } from "lucide-react";
+import { ArrowRight, ChevronDown, Lightbulb, Microscope, Network, CircuitBoard, Rocket, Zap, GraduationCap, Building2 } from "lucide-react";
+import { RoleCard } from "@/components/ui/RoleCard";
 
 const NetworkSphere = dynamic(() => import("@/components/NetworkSphere3D"), { ssr: false });
+
+// Cinematic intro overlay (Three.js — SSR disabled)
+const IntroController = dynamic(
+  () => import("@/components/intro/IntroController"),
+  { ssr: false },
+);
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -30,6 +37,9 @@ const timeline = [
 export default function HomePage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+      {/* ── Cinematic intro (fullscreen fixed overlay, plays on every visit) */}
+      <IntroController />
+
       <ParticleBackground />
 
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-16">
@@ -216,6 +226,65 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── BUILD WITH US ────────────────────────────────────────────────── */}
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 py-28"
+        id="build-with-us"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
+            <span className="text-[#00f5ff] text-xs font-mono tracking-[0.3em] uppercase">Innovation Ecosystem</span>
+            <h2 className="font-orbitron font-black text-3xl sm:text-4xl text-white mt-3">Build With Us</h2>
+            <p className="text-slate-500 mt-4 max-w-xl mx-auto text-sm leading-relaxed">
+              Join the BL4CKDOT ecosystem as a student, innovator, or company partner and co-build the future of intelligent systems.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
+              <RoleCard
+                icon={<GraduationCap size={22} />}
+                title="Students"
+                subtitle="Apprenticeship"
+                description="Gain hands-on experience building real AI, IoT, and cybersecurity systems. Get mentorship, training modules, and project credits."
+                features={["Training modules & certifications", "Real project experience", "Mentorship from engineers", "Join engineering sprints"]}
+                route="/register/student"
+                btnLabel="Apply for Apprenticeship"
+                accent="cyan"
+              />
+            </motion.div>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1}>
+              <RoleCard
+                icon={<Lightbulb size={22} />}
+                title="Innovators"
+                subtitle="Idea Incubation"
+                description="Transform your concept into a working prototype. Submit your idea, get feasibility analysis, and connect with a technical team."
+                features={["Prototype roadmap support", "Technical feasibility review", "Engineering team collaboration", "MVP launch guidance"]}
+                route="/register/innovator"
+                btnLabel="Submit Innovation Concept"
+                accent="purple"
+              />
+            </motion.div>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2}>
+              <RoleCard
+                icon={<Building2 size={22} />}
+                title="Companies"
+                subtitle="Partnership"
+                description="Partner with BL4CKDOT to research, prototype, and deploy production-grade intelligent systems for your industry."
+                features={["Research collaboration", "Prototype & MVP delivery", "Full product engineering", "AI/IoT systems integration"]}
+                route="/register/company"
+                btnLabel="Request Collaboration"
+                accent="green"
+              />
+            </motion.div>
+          </div>
+        </div>
+      </motion.section>
 
       <Footer />
     </motion.div>
