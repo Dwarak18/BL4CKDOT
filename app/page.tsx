@@ -11,9 +11,9 @@ import { RoleCard } from "@/components/ui/RoleCard";
 
 const NetworkSphere = dynamic(() => import("@/components/NetworkSphere3D"), { ssr: false });
 
-// Cinematic intro overlay (Three.js — SSR disabled)
-const IntroController = dynamic(
-  () => import("@/components/intro/IntroController"),
+// Cinematic intro overlay — Hyperlink World animation (Three.js — SSR disabled)
+const HyperlinkIntro = dynamic(
+  () => import("@/components/hyperlink-intro/HyperlinkIntro"),
   { ssr: false },
 );
 
@@ -38,7 +38,7 @@ export default function HomePage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       {/* ── Cinematic intro (fullscreen fixed overlay, plays on every visit) */}
-      <IntroController />
+      <HyperlinkIntro />
 
       <ParticleBackground />
 
