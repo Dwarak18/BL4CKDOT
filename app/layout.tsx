@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Orbitron, Space_Grotesk, Inter } from "next/font/google";
+import { Orbitron, Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "@/components/Navigation";
 import HackerMode from "@/components/HackerMode";
@@ -22,6 +22,12 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -47,7 +53,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
       </head>
       <body
-        className={`${orbitron.variable} ${spaceGrotesk.variable} ${inter.variable} antialiased bg-black text-slate-200 overflow-x-hidden`}
+        className={`${orbitron.variable} ${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-black text-slate-200 overflow-x-hidden`}
       >
         <div className="cyber-grid fixed inset-0 pointer-events-none z-0" />
         <DataStreams />

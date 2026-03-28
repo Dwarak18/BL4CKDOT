@@ -159,10 +159,17 @@ function GlobeScene({
     });
   });
 
+  useEffect(() => {
+    document.body.style.cursor = hovered ? "pointer" : "auto";
+
+    return () => {
+      document.body.style.cursor = "auto";
+    };
+  }, [hovered]);
+
   const handleHover = (node: NodeDef | null) => {
     setHovered(node?.label || null);
     onNodeHover(node);
-    document.body.style.cursor = node ? "pointer" : "auto";
   };
 
   return (
@@ -309,7 +316,7 @@ export default function NetworkSphere3D() {
   const signalCountRef = useRef(0);
 
   useEffect(() => {
-    let interval;
+    let interval: ReturnType<typeof setInterval> | null = null;
     const startTimer = setTimeout(() => {
       const addSignal = () => {
         const idx = signalCountRef.current;
@@ -322,7 +329,9 @@ export default function NetworkSphere3D() {
 
     return () => {
       clearTimeout(startTimer);
-      clearInterval(interval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, []);
 

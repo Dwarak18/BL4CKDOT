@@ -6,17 +6,13 @@ import HeroAnimation from "@/components/HeroAnimation";
 import ParticleBackground from "@/components/ParticleBackground";
 import Footer from "@/components/Footer";
 import InnovationRadar from "@/components/InnovationRadar";
+import IntroGlobe from "@/components/intro-globe/IntroGlobe";
 import { ArrowRight, ChevronDown, Lightbulb, Microscope, Network, CircuitBoard, Rocket, Zap, GraduationCap, Building2 } from "lucide-react";
 import { RoleCard } from "@/components/ui/RoleCard";
 
 const NetworkSphere = dynamic(() => import("@/components/NetworkSphere3D"), { ssr: false });
 
 // ── Signal Field intro overlay (Canvas 2D — no WebGL) ─────────────────
-const SignalFieldIntro = dynamic(
-  () => import("@/components/signal-field/SignalFieldIntro"),
-  { ssr: false },
-);
-
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: (i = 0) => ({
@@ -37,8 +33,7 @@ const timeline = [
 export default function HomePage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-      {/* ── Cinematic intro (fullscreen fixed overlay, plays on every visit) */}
-      <SignalFieldIntro />
+      <IntroGlobe />
 
       <ParticleBackground />
 
