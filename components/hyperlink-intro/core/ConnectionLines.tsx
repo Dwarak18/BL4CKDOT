@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { NodeData, Connection } from "@/hooks/useNetworkBuilder";
@@ -28,12 +28,13 @@ const FIBONACCI_SPHERE_POSITIONS: THREE.Vector3[] = (() => {
   return pts;
 })();
 
-const MAX_LINES     = 300; // max connections
-const POS_BUF_SIZE  = MAX_LINES * 2 * 3; // 2 vertices per line, xyz each
+const MAX_LINES     = 300;
+const POS_BUF_SIZE  = MAX_LINES * 2 * 3;
 const COL_BUF_SIZE  = MAX_LINES * 2 * 3;
 
 export default function ConnectionLines({ nodes, connections, stateRef }: Props) {
   const lineRef = useRef<THREE.LineSegments>(null);
+  const geoRef  = useRef<THREE.BufferGeometry>(null);
 
   const { posAttr, colAttr } = useMemo(() => {
     const posAttr = new THREE.BufferAttribute(new Float32Array(POS_BUF_SIZE), 3);
@@ -42,6 +43,14 @@ export default function ConnectionLines({ nodes, connections, stateRef }: Props)
     colAttr.setUsage(THREE.DynamicDrawUsage);
     return { posAttr, colAttr };
   }, []);
+
+  // Set buffer attributes imperatively once geometry is mounted
+  useEffect(() => {
+    const geo = geoRef.current;
+    if (!geo) return;
+    geo.setAttribute("position", posAttr);
+    geo.setAttribute("color",    colAttr);
+  }, [posAttr, colAttr]);
 
   // Map nodeId → index in nodes array
   const nodeIdMap = useMemo(() => {
@@ -62,7 +71,7 @@ export default function ConnectionLines({ nodes, connections, stateRef }: Props)
     const colors    = colAttr.array as Float32Array;
 
     for (let i = 0; i < count; i++) {
-      const conn   = connections[i];
+      const conn    = connections[i];
       const fromIdx = nodeIdMap.get(conn.from) ?? 0;
       const toIdx   = nodeIdMap.get(conn.to)   ?? 0;
       const fromNode = nodes[fromIdx];
@@ -88,7 +97,7 @@ export default function ConnectionLines({ nodes, connections, stateRef }: Props)
       positions[base + 4] = toPos.y;
       positions[base + 5] = toPos.z;
 
-      // Color fade with opacity — collapse makes lines fade out
+      // Color fade with networkOpacity; fade out during collapse
       const lineAlpha = alpha * (1 - collapse * 0.8);
       const [r, g, b] = colorToArray(conn.color);
       colors[base + 0] = r * lineAlpha;
@@ -107,15 +116,12 @@ export default function ConnectionLines({ nodes, connections, stateRef }: Props)
 
     posAttr.needsUpdate = true;
     colAttr.needsUpdate = true;
-    (line.geometry as THREE.BufferGeometry).setDrawRange(0, count * 2);
+    line.geometry.setDrawRange(0, count * 2);
   });
 
   return (
     <lineSegments ref={lineRef} frustumCulled={false}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" {...posAttr} />
-        <bufferAttribute attach="attributes-color"    {...colAttr} />
-      </bufferGeometry>
+      <bufferGeometry ref={geoRef} />
       <lineBasicMaterial
         vertexColors
         blending={THREE.AdditiveBlending}

@@ -140,7 +140,7 @@ export default function HomepageContent({ opacity }: Props) {
           </Link>
 
           <Link
-            href="/build-with-us"
+            href="/#build-with-us"
             style={{
               display:        "inline-flex",
               alignItems:     "center",

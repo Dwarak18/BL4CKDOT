@@ -28,7 +28,7 @@ export default function AdminPage() {
   const router = useRouter();
   const [authed, setAuthed]         = useState(false);
   const [loginEmail, setLoginEmail] = useState("admin@bl4ckdot.dev");
-  const [loginPass,  setLoginPass]  = useState("");
+  const [loginPass,  setLoginPass]  = useState("google");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
 

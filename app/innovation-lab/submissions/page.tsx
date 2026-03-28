@@ -1,6 +1,129 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import Footer from "@/components/Footer";
+import { motion } from "framer-motion";
+import { ArrowLeft, ExternalLink } from "lucide-react";
+
+type Submission = {
+  _id: string;
+  submission_type: string;
+  title: string;
+  description: string;
+  category: string;
+  status?: string;
+  createdAt?: string;
+  submitted_by?: { name?: string; email?: string; organization?: string };
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  pending:  "#F59E0B",
+  reviewing: "#00F5FF",
+  approved:  "#22C55E",
+  rejected:  "#FF3B3B",
+};
+
+export default function AdminSubmissionsPage() {
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("all");
+
+  useEffect(() => {
+    fetch("/api/innovation-submissions")
+      .then((r) => r.json())
+      .then((data) => setSubmissions(Array.isArray(data) ? data : data.submissions ?? []))
+      .catch(() => setSubmissions([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = filter === "all"
+    ? submissions
+    : submissions.filter((s) => s.submission_type === filter);
+
+  return (
+    <div className="min-h-screen">
+      <section className="pt-32 pb-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link href="/innovation-lab"
+          className="inline-flex items-center gap-2 text-white/40 hover:text-[#00F5FF] text-xs font-mono tracking-widest uppercase mb-8 transition-colors">
+          <ArrowLeft size={14} /> Innovation Lab
+        </Link>
+        <span className="text-[#22D3EE] text-xs font-mono tracking-[0.3em] uppercase">Admin View</span>
+        <h1 className="font-orbitron font-black text-4xl text-white mt-2">Submissions</h1>
+        <p className="text-slate-400 mt-3 text-sm">All idea and collaboration submissions from the BL4CKDOT ecosystem.</p>
+      </section>
+
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        {/* Filter tabs */}
+        <div className="flex gap-2 mb-8 flex-wrap">
+          {["all", "idea", "student", "innovator", "company"].map((f) => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`px-4 py-2 rounded-lg text-xs tracking-widest uppercase font-mono border transition-all ${
+                filter === f
+                  ? "text-[#22D3EE] border-[#22D3EE]/60 bg-[#22D3EE]/10"
+                  : "text-slate-500 border-slate-700 hover:text-[#22D3EE]"
+              }`}>
+              {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="text-center py-16 text-slate-500 font-mono text-sm">Loading submissions...</div>
+        ) : filtered.length === 0 ? (
+          <div className="glass-panel rounded-xl p-10 text-center">
+            <p className="text-slate-500 font-mono text-sm">No submissions found.</p>
+            <Link href="/innovation-lab/submit" className="mt-4 inline-flex items-center gap-2 text-[#00F5FF] text-xs font-mono hover:underline">
+              Go to submission form <ExternalLink size={12} />
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filtered.map((sub, i) => {
+              const statusColor = STATUS_COLORS[sub.status ?? "pending"] ?? "#F59E0B";
+              return (
+                <motion.div key={sub._id ?? i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className="glass-panel rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-1 flex-wrap">
+                      <span className="font-mono text-[10px] tracking-widest uppercase px-2 py-0.5 rounded border"
+                        style={{ color: "#22D3EE", borderColor: "rgba(34,211,238,0.3)", background: "rgba(34,211,238,0.06)" }}>
+                        {sub.submission_type}
+                      </span>
+                      <span className="font-mono text-[10px] tracking-widest uppercase px-2 py-0.5 rounded border"
+                        style={{ color: statusColor, borderColor: `${statusColor}40`, background: `${statusColor}10` }}>
+                        {sub.status ?? "pending"}
+                      </span>
+                    </div>
+                    <h3 className="font-space font-semibold text-white truncate">{sub.title}</h3>
+                    <p className="text-slate-500 text-xs mt-1 line-clamp-2">{sub.description}</p>
+                    {sub.submitted_by && (
+                      <p className="text-slate-600 text-xs mt-1 font-mono">
+                        {sub.submitted_by.name}
+                        {sub.submitted_by.email ? ` · ${sub.submitted_by.email}` : ""}
+                        {sub.submitted_by.organization ? ` · ${sub.submitted_by.organization}` : ""}
+                      </p>
+                    )}
+                  </div>
+                  <div className="shrink-0 text-right">
+                    {sub.createdAt && (
+                      <p className="text-slate-600 font-mono text-[10px]">
+                        {new Date(sub.createdAt).toLocaleDateString()}
+                      </p>
+                    )}
+                    <span className="text-slate-700 font-mono text-[10px]">{sub.category}</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+      <Footer />
+    </div>
+  );
+}
+
 import Footer from "@/components/Footer";
 import { motion } from "framer-motion";
 

@@ -11,9 +11,9 @@ import { RoleCard } from "@/components/ui/RoleCard";
 
 const NetworkSphere = dynamic(() => import("@/components/NetworkSphere3D"), { ssr: false });
 
-// Cinematic intro overlay — Hyperlink World animation (Three.js — SSR disabled)
-const HyperlinkIntro = dynamic(
-  () => import("@/components/hyperlink-intro/HyperlinkIntro"),
+// ── Signal Field intro overlay (Canvas 2D — no WebGL) ─────────────────
+const SignalFieldIntro = dynamic(
+  () => import("@/components/signal-field/SignalFieldIntro"),
   { ssr: false },
 );
 
@@ -38,7 +38,7 @@ export default function HomePage() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       {/* ── Cinematic intro (fullscreen fixed overlay, plays on every visit) */}
-      <HyperlinkIntro />
+      <SignalFieldIntro />
 
       <ParticleBackground />
 
@@ -79,7 +79,7 @@ export default function HomePage() {
                     <Zap size={16} /> Explore Innovation Lab
                   </Link>
                   <Link
-                    href="/build-with-us"
+                    href="/#build-with-us"
                     className="inline-flex items-center gap-2 px-7 py-3.5 border border-[#22D3EE]/40 text-[#22D3EE] rounded-xl text-sm hover:shadow-[0_0_24px_rgba(34,211,238,0.18)]"
                   >
                     <ArrowRight size={16} /> Build With BL4CKDOT
